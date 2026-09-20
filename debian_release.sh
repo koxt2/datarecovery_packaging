@@ -1,36 +1,35 @@
 #!/bin/bash
 set -euo pipefail
 base_dir="/home/richard/Projects/github/DataRecovery"
-obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
+obs_dir="/home/richard/Projects/obs/home:koxt2:debian/datarecovery"
 
 user=koxt2
 email=koxt2@protonmail.com
-version=$(sed -nE "s/^[[:space:]]*version:[[:space:]]*'v?([^']+)'.*$/\1/p" $base_dir/meson.build | head -n 1)
+version=$(sed -nE "s/^[[:space:]]*version:[[:space:]]*'v?([^']+)'.*$/\1/p" "$base_dir/meson.build" | head -n 1)
 
-debian_version(){
-    sed -i "5s/^Version: .*/Version: $version/" packaging/obs/deb/datarecovery.dsc
-    sed -i "11s/^ 0 0 datarecovery_[0-9.]*\.orig\.tar\.gz/ 0 0 datarecovery_$version.orig.tar.gz/" packaging/obs/deb/datarecovery.dsc
+dsc(){
+    sed -i "s/^Version: .*/Version: $version-1/" "$pkg_dir/debian/dsc"
 }
 
-debian_changelog(){
-    deb_date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
-    deb_formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" CHANGELOG.md |
+changelog(){
+    date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
+    formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" $base_dir/CHANGELOG.md |
         sed '$d' |
         sed -n 's/^- /  * /p')
 
-    deb_changelog="datarecovery ($version-1) UNRELEASED; urgency=medium
-$deb_formatted_changelog
+    changelog="datarecovery ($version-1) UNRELEASED; urgency=medium
+$formatted_changelog
 
- -- $user <$email>  $deb_date_string
+ -- $user <$email> $date_string
  "
 
     {
-        printf '%s\n' "$deb_changelog"
-        cat packaging/obs/deb/debian.changelog
-    } > packaging/obs/deb/debian.changelog.tmp
+        printf '%s\n' "$changelog"
+        cat "$pkg_dir/debian/changelog"
+    } > "$pkg_dir/debian/changelog.tmp"
 
-    mv packaging/obs/deb/debian.changelog.tmp packaging/obs/deb/debian.changelog
+    mv "$pkg_dir/debian/changelog.tmp" "$pkg_dir/debian/changelog"
 }
 
 commit_tag(){
@@ -38,48 +37,54 @@ commit_tag(){
     git add .
     git commit -m "Release v$version"
     git tag -a v$version -m "Release v$version"
-    #git push origin main --tags
+    cd $pkg_dir
 }
 
-debian_build(){
-    git archive \
+build_debian_obs(){
+    ################### this needs putting back to what is previously on github
+    archive="$pkg_dir/debian/v$version.orig.tar.gz"
+
+    git -C "$base_dir" archive \
         --format=tar.gz \
         --prefix="DataRecovery-$version/" \
-        -o "$base_dir/v$version.tar.gz" \
+        -o "$archive" \
         v$version
 
-    rm $obs_dir/home:koxt2:debian/datarecovery/*.tar.gz
-    cp "$base_dir/v$version.tar.gz" "$obs_dir/home:koxt2:debian/datarecovery/v$version.orig.tar.gz"
-    cp -R "$base_dir/packaging/obs/deb/." "$obs_dir/home:koxt2:debian/datarecovery"
-    cd $obs_dir/home:koxt2:debian/datarecovery
+    dsc_checksums "$archive"
+
+    rm -f "$obs_dir"/*.tar.gz
+    cp "$archive" "$obs_dir/v$version.orig.tar.gz"
+
+    for file in control rules changelog compat copyright dsc; do
+        cp "$pkg_dir/debian/$file" "$obs_dir/datarecovery.$file"
+    done
+
+    cd "$obs_dir"
     
     osc build Debian_12
     read -r -p "Press Enter to continue..."
 
     osc build Debian_13
     read -r -p "Press Enter to continue..."
-    cd $base_dir
 }
 
-debian_commit(){
-    cd $obs_dir/home:koxt2:debian/datarecovery
+commit(){
+    cd "$obs_dir"
     osc addremove
     osc commit
 }
 
 cleanup(){
-    rm "$base_dir/v$version.tar.gz"
+    rm "$pkg_dir/debian/v$version.orig.tar.gz"
 }
+
 main(){
-    #cd $base_dir
-    #debian_version
-    #debian_changelog
-    #commit_tag
-    #debian_build
-    ##fedora_copr_build
-    ##commit_github
-    ##commit_repos
-    #cleanup
+    dsc
+    changelog
+    commit_tag
+    build_debian_obs
+    commit
+    cleanup
 }
 
 main

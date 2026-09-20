@@ -1,13 +1,13 @@
-Format: 3.0 (native)
+Format: 3.0 (quilt)
 Source: datarecovery
 Binary: datarecovery
 Architecture: all
-Version: 0.6.1
+Version: 0.6.2
 Maintainer: koxt2 <koxt2@protonmail.com>
 Homepage: https://github.com/koxt2/DataRecovery
 Standards-Version: 4.5.0
 Build-Depends: debhelper (>= 12), meson (>= 1.0.0), ninja-build, libgtk-4-dev, libadwaita-1-dev, libglib2.0-dev, desktop-file-utils
 Files:
- 0 0 v0.6.1.orig.tar.gz
+ 22301c2a53a1281b09a505db2cead56e 472890 v0.6.2.orig.tar.gz
 Package-List:
  datarecovery deb utils optional arch=all

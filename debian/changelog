@@ -1,3 +1,32 @@
+datarecovery (0.6.2-1) UNRELEASED; urgency=medium
+  * Fix Fedora rpmlint errors
+  * Removed packaging directories
+
+ -- koxt2 <koxt2@protonmail.com> Sun, 20 Sep 2026 22:54:03 +0000
+ 
+datarecovery (0.6.2-1) UNRELEASED; urgency=medium
+  * Fix Fedora rpmlint errors
+  * Removed packaging directories
+
+ -- koxt2 <koxt2@protonmail.com> Sun, 20 Sep 2026 22:52:52 +0000
+ 
+datarecovery (0.6.2-1) UNRELEASED; urgency=medium
+  * Fix Fedora rpmlint errors
+  * Removed packaging directories
+
+ -- koxt2 <koxt2@protonmail.com> Sun, 20 Sep 2026 22:49:01 +0000
+ 
+datarecovery (0.6.2-1) UNRELEASED; urgency=medium
+  * Fix Fedora rpmlint errors
+  * Removed packaging directories
+
+ -- koxt2 <koxt2@protonmail.com> Sun, 20 Sep 2026 22:29:26 +0000
+ 
+datarecovery (0.6.1-1) UNRELEASED; urgency=medium
+  * Bogus dates in changelogs
+
+ -- koxt2 <koxt2@protonmail.com> Sun, 20 Sep 2026 21:48:42 +0000
+ 
 datarecovery (0.6.0) UNRELEASED; urgency=medium
   * Privileged ddrescue helper now derives ownership from `PKEXEC_UID`
   * Removed the Polkit `allow_gui` override
