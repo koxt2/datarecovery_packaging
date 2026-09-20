@@ -1,16 +1,12 @@
 #!/bin/bash
 set -euo pipefail
+base_dir="/home/richard/Projects/github/DataRecovery"
+obs_dir="/home/richard/Projects/obs"
+pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
 user=koxt2
 email=koxt2@protonmail.com
-version="0.6.2"
-
-base_dir="/home/richard/Projects/github/DataRecovery"
-obs_dir="/home/richard/Projects/obs"
-
-meson_version(){
-    sed -i "2s/version: 'v[0-9.]*'/version: 'v$version'/" meson.build
-}
+version=$(sed -nE "s/^[[:space:]]*version:[[:space:]]*'v?([^']+)'.*$/\1/p" $base_dir/meson.build | head -n 1)
 
 debian_version(){
     sed -i "5s/^Version: .*/Version: $version/" packaging/obs/deb/datarecovery.dsc
@@ -50,8 +46,7 @@ debian_build(){
         --format=tar.gz \
         --prefix="DataRecovery-$version/" \
         -o "$base_dir/v$version.tar.gz" \
-        v$version \
-        -- . ':(exclude)debian' ':(exclude)packaging' 
+        v$version
 
     rm $obs_dir/home:koxt2:debian/datarecovery/*.tar.gz
     cp "$base_dir/v$version.tar.gz" "$obs_dir/home:koxt2:debian/datarecovery/v$version.orig.tar.gz"
@@ -76,16 +71,15 @@ cleanup(){
     rm "$base_dir/v$version.tar.gz"
 }
 main(){
-    cd $base_dir
-    meson_version
-    debian_version
-    debian_changelog
-    commit_tag
-    debian_build
-    #fedora_copr_build
-    #commit_github
-    #commit_repos
-    cleanup
+    #cd $base_dir
+    #debian_version
+    #debian_changelog
+    #commit_tag
+    #debian_build
+    ##fedora_copr_build
+    ##commit_github
+    ##commit_repos
+    #cleanup
 }
 
 main
