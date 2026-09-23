@@ -10,6 +10,7 @@ version=$(sed -nE "s/^[[:space:]]*version:[[:space:]]*'v?([^']+)'.*$/\1/p" "$bas
 
 dsc(){
     sed -i "s/^Version: .*/Version: $version-1/" "$pkg_dir/debian/dsc"
+    sed -i -E "/^Files:/,/^Package-List:/ s|^ [^[:space:]]+ [0-9]+ v?[0-9.]+\.orig\.tar\.gz$| 0 0 v$version.orig.tar.gz|" "$pkg_dir/debian/dsc"
 }
 
 changelog(){
@@ -50,21 +51,25 @@ build_debian_obs(){
         -o "$archive" \
         v$version
 
-    dsc_checksums "$archive"
+    archive_checksum=$(md5sum "$archive" | awk '{print $1}')
+    archive_size=$(stat --format='%s' "$archive")
+    sed -i -E "/^Files:/,/^Package-List:/ s|^ [^[:space:]]+ [0-9]+ v?[0-9.]+\.orig\.tar\.gz$| $archive_checksum $archive_size v$version.orig.tar.gz|" "$pkg_dir/debian/dsc"
 
     rm -f "$obs_dir"/*.tar.gz
     cp "$archive" "$obs_dir/v$version.orig.tar.gz"
 
-    for file in control rules changelog compat copyright dsc; do
-        cp "$pkg_dir/debian/$file" "$obs_dir/datarecovery.$file"
+    for file in control rules changelog compat copyright; do
+        cp "$pkg_dir/debian/$file" "$obs_dir/$file"
     done
+    dsc_file="datarecovery_${version}-1.dsc"
+    cp "$pkg_dir/debian/dsc" "$obs_dir/$dsc_file"
 
     cd "$obs_dir"
     
-    osc build Debian_12
+    osc build --vm-type=qemu --clean Debian_12 x86_64 "$dsc_file"
     read -r -p "Press Enter to continue..."
 
-    osc build Debian_13
+    osc build --vm-type=qemu --clean Debian_13 x86_64 "$dsc_file"
     read -r -p "Press Enter to continue..."
 }
 
@@ -83,8 +88,8 @@ main(){
     changelog
     commit_tag
     build_debian_obs
-    commit
-    cleanup
+    #commit
+    #cleanup
 }
 
 main
