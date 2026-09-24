@@ -7,6 +7,7 @@ version="0.6.1"
 
 base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
+pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
 version_targets=(debian)
 
@@ -16,7 +17,6 @@ meson_version(){
     sed -i "2s/version: 'v[0-9.]*'/version: 'v$version'/" meson.build
 }
 
-### Need to change changelog from Unreleased to $version
 app_changelog(){
     date_string=$(date -u '+%Y-%m-%d')
     sed -i "0,/^## \[[Uu]nreleased\]/s//## [v$version] - $date_string/" "$base_dir/CHANGELOG.md"
@@ -88,20 +88,18 @@ $formatted_changelog
 }
 
 debian_commit(){
-    local orig_dir target_dir
-    orig_dir=$(pwd)
     target_dir="$obs_dir/home:koxt2:debian/datarecovery"
     cd "$target_dir"
     osc update
     rm -f ./*.tar.gz
     rm -f ./*.dsc
     rm -f ./debian.*
-    cd "$orig_dir"
+    cd "$pkg_dir"
     cp "$archive" "$target_dir/v$version.orig.tar.gz"
     for f in changelog compat control copyright rules; do
-        cp "debian/$f" "$target_dir/debian.$f"
+        cp "debian/$f" "$target_dir/datarecovery.$f"
     done
-    cp "debian/dsc" "$target_dir/datarecovery_$version-1.dsc"
+    cp "debian/dsc" "$target_dir/datarecovery.dsc"
     cd "$target_dir"
     osc addremove
     osc commit
@@ -131,10 +129,10 @@ main(){
     #github_release
 
     get_source
-    app_changelog
+    #app_changelog
 
-    version
-    changelog
+    #version
+    #changelog
     commit_repos
 }
 
