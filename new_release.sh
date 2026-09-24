@@ -9,7 +9,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(debian)
+version_targets=(fedora)
 
 ########## Meson and app's changelog ##########
 ##############################################
@@ -105,6 +105,48 @@ debian_commit(){
     osc commit
 }
 
+fedora_version(){
+    sed -i "4s/^Version:        .*/Version:        $version/" packaging/copr/datarecovery.spec
+}
+
+fedora_changelog(){
+    fed_date_string=$(LC_ALL=C date -u '+%a %b %-d %Y')
+    fed_formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" "$base_dir/CHANGELOG.md" |
+        sed '$d' |
+        sed -n 's/^[[:space:]]*-[[:space:]]*/- /p')
+
+    fed_changelog="* $fed_date_string $user <$email> - $version
+$fed_formatted_changelog
+"
+        awk -v changelog="$fed_changelog" '
+        /^%changelog$/ {
+            print
+            printf "%s\n", changelog
+            next
+        }
+        { print }
+    ' packaging/copr/datarecovery.spec > packaging/copr/datarecovery.spec.tmp
+
+mv packaging/copr/datarecovery.spec.tmp packaging/copr/datarecovery.spec
+}
+
+fedora_commit(){
+    mkdir -p "$pkg_dir"/copr/temp/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+    cp "$pkg_dir/copr/datarecovery.spec" "$pkg_dir/copr/temp/SPECS/"
+    cp "$pkg_dir/copr/datarecovery-rpmlintrc" "$pkg_dir/copr/temp/SOURCES/"
+    cp "$pkg_dir/$archive" "$pkg_dir/copr/temp/SOURCES/v$version.tar.gz"
+    #wget -O "$topdir/SOURCES/v$version.tar.gz" \
+    #  "https://github.com/koxt2/DataRecovery/archive/refs/tags/v$version.tar.gz"
+
+    rpmbuild -bs --define "_topdir $pkg_dir/copr/temp" \
+      "$pkg_dir/copr/temp/SPECS/datarecovery.spec"
+
+    #copr build koxt2/datarecovery \
+    #  "$pkg_dir/copr/temp/SRPMS/datarecovery-$version-0.src.rpm"
+
+    #rm -rf "$pkg_dir/copr/temp"
+}
+
 ########## Setup 
 version(){
     for target in "${version_targets[@]}"; do
@@ -119,7 +161,9 @@ changelog(){
 }
 
 commit_repos(){
-    debian_commit
+    for target in "${version_targets[@]}"; do
+        "${target}_commit"
+    done
 }
 
 main(){
