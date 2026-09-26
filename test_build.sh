@@ -9,7 +9,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(arch)
+version_targets=(ubuntu)
 
 ########## Meson and app's changelog ##########
 ##############################################
@@ -204,6 +204,49 @@ arch_commit(){
     osc commit
 }
 
+########## Ubuntu ##########
+ubuntu_files(){
+    cd "$pkg_dir"
+    target_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
+    find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
+    for f in changelog compat control copyright rules dsc; do
+        cp "debian/$f" "$target_dir/debian.$f"
+    done
+    cp "$pkg_dir/v$version.tar.gz" "$target_dir/v$version.orig.tar.gz"
+}
+
+ubuntu_version(){
+    sed -i "s/^Version: .*/Version: $version-1/" "$obs_dir/home:koxt2:ubuntu/datarecovery_test/debian.dsc"
+}
+
+ubuntu_changelog(){
+    target_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
+    date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
+    formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" "$base_dir/CHANGELOG.md" |
+        sed '$d' |
+        sed -n 's/^- /  * /p')
+
+    changelog="datarecovery ($version-1) UNRELEASED; urgency=medium
+$formatted_changelog
+
+ -- $user <$email> $date_string
+ "
+
+    {
+        printf '%s\n' "$changelog"
+        cat "$target_dir/debian.changelog"
+    } > "$target_dir/debian.changelog.tmp"
+
+    mv "$target_dir/debian.changelog.tmp" "$target_dir/debian.changelog"
+}
+
+ubuntu_commit(){
+    cd "$obs_dir/home:koxt2:ubuntu/datarecovery_test"
+    #osc update
+    osc addremove
+    osc commit
+}
+
 ########## Setup 
 files(){
     for target in "${version_targets[@]}"; do
@@ -237,9 +280,11 @@ cleanup(){
     git tag -d "v$version"
     git reset origin/main --hard
 }
+
 main(){
     meson_version
     app_changelog
+    
     commit_tag
 
     create_source_tarball
@@ -247,7 +292,9 @@ main(){
     files
     version
     changelog
+    
     commit_repos
+    
     cleanup
 }
 
