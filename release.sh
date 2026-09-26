@@ -173,7 +173,6 @@ main(){
     #github_release
 
     get_source
-    #app_changelog
 
     #version
     #changelog

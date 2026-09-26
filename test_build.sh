@@ -9,7 +9,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(debian)
+version_targets=(debian fedora)
 
 ########## Meson and app's changelog ##########
 ##############################################
@@ -22,7 +22,7 @@ meson_version(){
 app_changelog(){
     cd "$base_dir"
     date_string=$(date -u '+%Y-%m-%d')
-    sed -i "0,/^## \[unreleased\]/s//## [v$version] - $date_string/" "$base_dir/CHANGELOG.md"
+    sed -i "0,/^## \[[Uu]nreleased\]/s//## [v$version] - $date_string/" "$base_dir/CHANGELOG.md"
     cd "$pkg_dir"
 }
 
@@ -39,15 +39,16 @@ create_source_tarball(){
     cd "$base_dir"
     git archive \
         --format=tar.gz \
-        --prefix="datarecovery-$version/" \
+        --prefix="DataRecovery-$version/" \
         -o "$pkg_dir/v$version.tar.gz" \
         v$version
 }
 
+########## Debian ##########
 debian_files(){
     cd "$pkg_dir"
     target_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
-    rm -f "$target_dir"/datarecovery.{changelog,compat,control,copyright,rules}
+    find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
         if [[ "$f" == dsc ]]; then
             cp "debian/$f" "$target_dir/datarecovery.dsc"
@@ -59,12 +60,12 @@ debian_files(){
     cp "$pkg_dir/v$version.tar.gz" "$target_dir/v$version.orig.tar.gz"
 }
 
-########## Debian (obs) ##########
 debian_version(){
     sed -i "s/^Version: .*/Version: $version-1/" "$obs_dir/home:koxt2:debian/datarecovery_test/datarecovery.dsc"
 }
 
 debian_changelog(){
+    target_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
         date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
     formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" $base_dir/CHANGELOG.md |
         sed '$d' |
@@ -78,16 +79,58 @@ $formatted_changelog
 
     {
         printf '%s\n' "$changelog"
-        cat "$obs_dir/home:koxt2:debian/datarecovery_test/debian.changelog"
-    } > "$obs_dir/home:koxt2:debian/datarecovery_test/debian.changelog.tmp"
+        cat "$target_dir/debian.changelog"
+    } > "$target_dir/debian.changelog.tmp"
 
-    mv "$obs_dir/home:koxt2:debian/datarecovery_test/debian.changelog.tmp" "$obs_dir/home:koxt2:debian/datarecovery_test/debian.changelog"
+    mv "$target_dir/debian.changelog.tmp" "$target_dir/debian.changelog"
 }
 
 debian_commit(){
     cd "$obs_dir/home:koxt2:debian/datarecovery_test"
-    osc update
-    rm -f datarecovery.changelog datarecovery.compat datarecovery.control datarecovery.copyright datarecovery.rules
+    #osc update
+    osc addremove
+    osc commit
+}
+
+########## Fedora ##########
+fedora_files(){
+    cd "$pkg_dir"
+    target_dir="$obs_dir/home:koxt2:fedora/datarecovery_test"
+    find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
+    cp "copr/datarecovery.spec" "$target_dir/datarecovery.spec"
+    cp "copr/datarecovery-rpmlintrc" "$target_dir/datarecovery-rpmlintrc"
+    cp "v$version.tar.gz" "$target_dir/v$version.tar.gz"
+}
+
+fedora_version(){
+    sed -i "4s/^Version:        .*/Version:        $version/" "$obs_dir/home:koxt2:fedora/datarecovery_test/datarecovery.spec"
+}   
+
+fedora_changelog(){
+    target_dir="$obs_dir/home:koxt2:fedora/datarecovery_test"
+        fed_date_string=$(LC_ALL=C date -u '+%a %b %-d %Y')
+    fed_formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" "$base_dir/CHANGELOG.md" |
+        sed '$d' |
+        sed -n 's/^[[:space:]]*-[[:space:]]*/- /p')
+
+    fed_changelog="* $fed_date_string $user <$email> - $version
+$fed_formatted_changelog
+"
+        awk -v changelog="$fed_changelog" '
+        /^%changelog$/ {
+            print
+            printf "%s\n", changelog
+            next
+        }
+        { print }
+    ' "$target_dir/datarecovery.spec" > "$target_dir/datarecovery.spec.tmp"
+
+mv "$target_dir/datarecovery.spec.tmp" "$target_dir/datarecovery.spec"
+}
+
+fedora_commit(){
+    cd "$obs_dir/home:koxt2:fedora/datarecovery_test"
+    #osc update
     osc addremove
     osc commit
 }
@@ -118,6 +161,7 @@ commit_repos(){
 }
 
 cleanup(){
+    cd "$pkg_dir"
     rm ./*.tar.gz
     cd "$base_dir"
     git tag -d "v$version"
