@@ -9,7 +9,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(ubuntu)
+version_targets=(arch ubuntu debian fedora opensuse)
 
 ########## Meson and app's changelog ##########
 ##############################################
@@ -50,18 +50,14 @@ debian_files(){
     target_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
     find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
-        if [[ "$f" == dsc ]]; then
-            cp "debian/$f" "$target_dir/datarecovery.dsc"
-        else
-            cp "debian/$f" "$target_dir/debian.$f"
-        fi
+        cp "debian/$f" "$target_dir/debian.$f"
     done
 
     cp "$pkg_dir/v$version.tar.gz" "$target_dir/v$version.orig.tar.gz"
 }
 
 debian_version(){
-    sed -i "s/^Version: .*/Version: $version-1/" "$obs_dir/home:koxt2:debian/datarecovery_test/datarecovery.dsc"
+    sed -i "s/^Version: .*/Version: $version-1/" "$obs_dir/home:koxt2:debian/datarecovery_test/debian.dsc"
 }
 
 debian_changelog(){
