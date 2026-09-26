@@ -16,9 +16,11 @@ depends=(
   'rdfind'
   'udisks2'
   'polkit'
+  'hdf5'
 )
 makedepends=('meson' 'ninja')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/koxt2/DataRecovery/archive/refs/tags/v$pkgver.tar.gz")
+#source=("v$pkgver.tar.gz")
 sha256sums=('SKIP')
 
 build() {
