@@ -37,6 +37,7 @@ $osc_formatted_changelog
 
 opensuse_commit(){
     cd "$obs_dir/home:koxt2:openSUSE/datarecovery_test"
+    osc update
     osc addremove
     osc commit
 }

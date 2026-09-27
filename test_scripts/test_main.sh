@@ -9,7 +9,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(debian ubuntu)
+version_targets=(fedora opensuse arch debian ubuntu)
 
 source "test_upstream_setup.sh"
 source "test_debian_ubuntu.sh"
@@ -20,7 +20,7 @@ source "test_arch.sh"
 files(){
     for target in "${version_targets[@]}"; do
         [[ "$target" == "ubuntu" ]] && continue
-        "${target}_files "
+        "${target}_files"
     done
 }
 
