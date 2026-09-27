@@ -8,8 +8,9 @@ version="0.6.1"
 base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
+proj_dir="/home/richard/Projects"
 
-version_targets=(fedora)
+version_targets=(arch)
 
 ########## Meson and app's changelog ##########
 ##############################################
@@ -28,7 +29,7 @@ commit_tag(){
     git add .
     git commit -m "Release v$version"
     git tag -a v$version -m "Release v$version"
-    #git push origin main --tags
+    git push origin main --tags
 }
 ########## Release on github ##########
 github_release(){
@@ -147,6 +148,27 @@ fedora_commit(){
     rm -rf "$pkg_dir/copr/temp"
 }
 
+########## Arch ##########
+
+arch_version(){
+    sed -i "s/^pkgver=.*/pkgver=$version/" "$pkg_dir/aur/PKGBUILD"
+    sed -i -E \
+        -e "s|^([[:space:]]*pkgver = ).*|\\1$version|" \
+        -e "s|^([[:space:]]*source = )datarecovery-[^:]*::https://github.com/koxt2/DataRecovery/archive/refs/tags/v[^[:space:]]*|\\1datarecovery-$version.tar.gz::https://github.com/koxt2/DataRecovery/archive/refs/tags/v$version.tar.gz|" \
+        "$pkg_dir/aur/.SRCINFO"
+}
+
+arch_commit(){
+    target_dir="$proj_dir/aur/datarecovery"
+    git -C "$target_dir" pull --ff-only
+    cp "$pkg_dir/aur/PKGBUILD" "$target_dir/PKGBUILD"
+    cp "$pkg_dir/aur/.SRCINFO" "$target_dir/.SRCINFO"
+    git -C "$target_dir" add PKGBUILD .SRCINFO
+    git -C "$target_dir" -c user.name="$user" -c user.email="$email" \
+        commit -m "Update to v$version" -- PKGBUILD .SRCINFO
+    git -C "$target_dir" push
+}
+
 ########## Setup 
 version(){
     for target in "${version_targets[@]}"; do
@@ -167,14 +189,15 @@ commit_repos(){
 }
 
 main(){
+    version_targets=(arch)
     #meson_version
     #app_changelog
     #commit_tag
     #github_release
 
-    get_source
+    #get_source
 
-    #version
+    version
     #changelog
     commit_repos
 }

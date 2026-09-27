@@ -9,7 +9,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(arch ubuntu debian fedora opensuse)
+version_targets=(debian)
 
 ########## Meson and app's changelog ##########
 ##############################################
