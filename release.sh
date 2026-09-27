@@ -60,15 +60,22 @@ get_source(){
 }   
 
 ########## Debian (obs) ##########
-
 debian_version(){
-    sed -i "5s/^Version: .*/Version: $version-1/" ./debian/dsc
+    if grep -q "^Version: $version-1$" ./debian/dsc; then
+        return
+    fi
+
+    sed -i "5s/^Version: .*/Version: $version-1/" ./debian/debian.dsc
     archive_checksum=$(md5sum "$archive" | awk '{print $1}')
     archive_size=$(stat --format='%s' "$archive")
     sed -i -E "/^Files:/,/^Package-List:/ s|^ [^[:space:]]+ [0-9]+ v?[0-9.]+\.orig\.tar\.gz$| $archive_checksum $archive_size v$version.orig.tar.gz|" "./debian/dsc"
 }
 
 debian_changelog(){
+    if grep -q "^datarecovery ($version-1) " ./debian/changelog; then
+        return
+    fi
+
         date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
     formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" $base_dir/CHANGELOG.md |
         sed '$d' |
@@ -92,9 +99,7 @@ debian_commit(){
     target_dir="$obs_dir/home:koxt2:debian/datarecovery"
     cd "$target_dir"
     osc update
-    rm -f ./*.tar.gz
-    rm -f ./*.dsc
-    rm -f ./debian.*
+find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete*
     cd "$pkg_dir"
     cp "$archive" "$target_dir/v$version.orig.tar.gz"
     for f in changelog compat control copyright rules; do
@@ -106,6 +111,7 @@ debian_commit(){
     osc commit
 }
 
+########## Fedora (copr) ##########
 fedora_version(){
     sed -i "4s/^Version:        .*/Version:        $version/" packaging/copr/datarecovery.spec
 }
@@ -136,8 +142,6 @@ fedora_commit(){
     cp "$pkg_dir/copr/datarecovery.spec" "$pkg_dir/copr/temp/SPECS/"
     cp "$pkg_dir/copr/datarecovery-rpmlintrc" "$pkg_dir/copr/temp/SOURCES/"
     cp "$pkg_dir/$archive" "$pkg_dir/copr/temp/SOURCES/v$version.tar.gz"
-    #wget -O "$topdir/SOURCES/v$version.tar.gz" \
-    #  "https://github.com/koxt2/DataRecovery/archive/refs/tags/v$version.tar.gz"
 
     rpmbuild -bs --define "_topdir $pkg_dir/copr/temp" \
       "$pkg_dir/copr/temp/SPECS/datarecovery.spec"
@@ -149,7 +153,6 @@ fedora_commit(){
 }
 
 ########## Arch ##########
-
 arch_version(){
     sed -i "s/^pkgver=.*/pkgver=$version/" "$pkg_dir/aur/PKGBUILD"
     sed -i -E \
@@ -166,6 +169,25 @@ arch_commit(){
     git -C "$target_dir" add PKGBUILD .SRCINFO
     git -C "$target_dir" -c user.name="$user" -c user.email="$email" \
         commit -m "Update to v$version" -- PKGBUILD .SRCINFO
+    git -C "$target_dir" push
+}
+
+########## Ubuntu ##########
+ubuntu_version(){
+    debian_version
+}
+
+ubuntu_changelog(){
+    debian_changelog
+}
+
+ubuntu_commit(){
+    target_dir="$proj_dir/ubuntu/datarecovery"
+    git -C "$target_dir" pull --ff-only
+    cp "$pkg_dir/ubuntu/debian/changelog" "$target_dir/debian/changelog"
+    git -C "$target_dir" add debian/changelog
+    git -C "$target_dir" -c user.name="$user" -c user.email="$email" \
+        commit -m "Update to v$version" -- debian/changelog
     git -C "$target_dir" push
 }
 
@@ -198,7 +220,7 @@ main(){
     #get_source
 
     version
-    #changelog
+    changelog
     commit_repos
 }
 

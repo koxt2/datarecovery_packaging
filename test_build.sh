@@ -9,7 +9,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(debian)
+version_targets=(debian ubuntu)
 
 ########## Meson and app's changelog ##########
 ##############################################
@@ -35,6 +35,7 @@ commit_tag(){
     cd "$pkg_dir"
 }
 
+########## Source Tarball ##########
 create_source_tarball(){
     cd "$base_dir"
     git archive \
@@ -44,25 +45,31 @@ create_source_tarball(){
         v$version
 }
 
-########## Debian ##########
+########## Debian and Ubuntu ##########
 debian_files(){
     cd "$pkg_dir"
-    target_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
-    find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
+    target_debian_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
+    target_ubuntu_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
+    find "$target_debian_dir" -mindepth 1 -not -path "$target_debian_dir/.osc" -not -path "$target_debian_dir/.osc/*" -delete
+    find "$target_ubuntu_dir" -mindepth 1 -not -path "$target_ubuntu_dir/.osc" -not -path "$target_ubuntu_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
-        cp "debian/$f" "$target_dir/debian.$f"
+        cp "debian/debian.$f" "$target_debian_dir/debian.$f"
+        cp "debian/debian.$f" "$target_ubuntu_dir/debian.$f"
     done
 
-    cp "$pkg_dir/v$version.tar.gz" "$target_dir/v$version.orig.tar.gz"
+    cp "$pkg_dir/v$version.tar.gz" "$target_debian_dir/v$version.orig.tar.gz"
+    cp "$pkg_dir/v$version.tar.gz" "$target_ubuntu_dir/v$version.orig.tar.gz"
 }
 
 debian_version(){
     sed -i "s/^Version: .*/Version: $version-1/" "$obs_dir/home:koxt2:debian/datarecovery_test/debian.dsc"
+    sed -i "s/^Version: .*/Version: $version-1/" "$obs_dir/home:koxt2:ubuntu/datarecovery_test/debian.dsc"
 }
 
 debian_changelog(){
-    target_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
-        date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
+    target_debian_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
+    target_ubuntu_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
+    date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
     formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" $base_dir/CHANGELOG.md |
         sed '$d' |
         sed -n 's/^- /  * /p')
@@ -75,17 +82,32 @@ $formatted_changelog
 
     {
         printf '%s\n' "$changelog"
-        cat "$target_dir/debian.changelog"
-    } > "$target_dir/debian.changelog.tmp"
+        cat "$target_debian_dir/debian.changelog"
+    } > "$target_debian_dir/debian.changelog.tmp"
 
-    mv "$target_dir/debian.changelog.tmp" "$target_dir/debian.changelog"
+    {
+        printf '%s\n' "$changelog"
+        cat "$target_ubuntu_dir/debian.changelog"
+    } > "$target_ubuntu_dir/debian.changelog.tmp"
+
+    mv "$target_debian_dir/debian.changelog.tmp" "$target_debian_dir/debian.changelog"
+    mv "$target_ubuntu_dir/debian.changelog.tmp" "$target_ubuntu_dir/debian.changelog"
 }
 
 debian_commit(){
-    cd "$obs_dir/home:koxt2:debian/datarecovery_test"
-    #osc update
+    cd "$target_debian_dir"
+    osc update
     osc addremove
     osc commit
+    cd "$pkg_dir"
+}
+
+ubuntu_commit(){
+    cd "$target_ubuntu_dir"
+    osc update
+    osc addremove
+    osc commit
+    cd "$pkg_dir"
 }
 
 ########## Fedora ##########
@@ -200,58 +222,17 @@ arch_commit(){
     osc commit
 }
 
-########## Ubuntu ##########
-ubuntu_files(){
-    cd "$pkg_dir"
-    target_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
-    find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
-    for f in changelog compat control copyright rules dsc; do
-        cp "debian/$f" "$target_dir/debian.$f"
-    done
-    cp "$pkg_dir/v$version.tar.gz" "$target_dir/v$version.orig.tar.gz"
-}
-
-ubuntu_version(){
-    sed -i "s/^Version: .*/Version: $version-1/" "$obs_dir/home:koxt2:ubuntu/datarecovery_test/debian.dsc"
-}
-
-ubuntu_changelog(){
-    target_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
-    date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
-    formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" "$base_dir/CHANGELOG.md" |
-        sed '$d' |
-        sed -n 's/^- /  * /p')
-
-    changelog="datarecovery ($version-1) UNRELEASED; urgency=medium
-$formatted_changelog
-
- -- $user <$email> $date_string
- "
-
-    {
-        printf '%s\n' "$changelog"
-        cat "$target_dir/debian.changelog"
-    } > "$target_dir/debian.changelog.tmp"
-
-    mv "$target_dir/debian.changelog.tmp" "$target_dir/debian.changelog"
-}
-
-ubuntu_commit(){
-    cd "$obs_dir/home:koxt2:ubuntu/datarecovery_test"
-    #osc update
-    osc addremove
-    osc commit
-}
-
 ########## Setup 
 files(){
     for target in "${version_targets[@]}"; do
+        [[ "$target" == "ubuntu" ]] && continue
         "${target}_files"
     done
 }
 
 version(){
     for target in "${version_targets[@]}"; do
+        [[ "$target" == "ubuntu" ]] && continue
         "${target}_version"
     done
 }
@@ -259,6 +240,7 @@ version(){
 changelog(){
     for target in "${version_targets[@]}"; do
         [[ "$target" == "arch" ]] && continue
+        [[ "$target" == "ubuntu" ]] && continue
         "${target}_changelog"
     done
 }
