@@ -9,24 +9,23 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(fedora opensuse arch debian ubuntu)
+version_targets=(debian ubuntu)
 
 source "test_upstream_setup.sh"
-source "test_debian_ubuntu.sh"
+source "test_debian.sh"
+source "test_ubuntu.sh"
 source "test_fedora.sh"
 source "test_opensuse.sh"
 source "test_arch.sh"
 
 files(){
     for target in "${version_targets[@]}"; do
-        [[ "$target" == "ubuntu" ]] && continue
         "${target}_files"
     done
 }
 
 version(){
     for target in "${version_targets[@]}"; do
-        [[ "$target" == "ubuntu" ]] && continue
         "${target}_version"
     done
 }
@@ -34,7 +33,6 @@ version(){
 changelog(){
     for target in "${version_targets[@]}"; do
         [[ "$target" == "arch" ]] && continue
-        [[ "$target" == "ubuntu" ]] && continue
         "${target}_changelog"
     done
 }
