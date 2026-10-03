@@ -1,3 +1,5 @@
+#!/bin/bash
+
 debian_files(){
     cd "$pkg_dir"
     target_debian_dir="$obs_dir/home:koxt2:debian/datarecovery_test"

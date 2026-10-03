@@ -1,4 +1,5 @@
-########## openSUSE ##########
+#!/bin/bash
+
 opensuse_files(){
     cd "$pkg_dir"
     target_dir="$obs_dir/home:koxt2:openSUSE/datarecovery_test"

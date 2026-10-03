@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ubuntu_files(){
     cd "$pkg_dir"
     target_ubuntu_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"

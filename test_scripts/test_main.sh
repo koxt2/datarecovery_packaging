@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -euo pipefail
 
 user=koxt2
@@ -9,7 +10,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(debian ubuntu)
+version_targets=()
 
 source "test_upstream_setup.sh"
 source "test_debian.sh"
@@ -54,6 +55,7 @@ cleanup(){
 main(){
     meson_version "$version" "$base_dir" "$pkg_dir"
     app_changelog "$version" "$base_dir" "$pkg_dir"
+    meta_info "$version" "$base_dir" "$pkg_dir"
     
     commit_tag "$version" "$base_dir" "$pkg_dir"
 

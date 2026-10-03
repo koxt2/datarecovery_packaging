@@ -1,4 +1,5 @@
-########## Fedora ##########
+#!/bin/bash
+
 fedora_files(){
     cd "$pkg_dir"
     target_dir="$obs_dir/home:koxt2:fedora/datarecovery_test"
