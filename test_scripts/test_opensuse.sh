@@ -22,7 +22,7 @@ opensuse_changelog(){
         sed -n 's/^[[:space:]]*-[[:space:]]*/  * /p')
 
     osc_changelog="-------------------------------------------------------------------
-$osc_date_string $user <$email>
+$osc_date_string - $user <$email>
 
 - Update to $version
 $osc_formatted_changelog

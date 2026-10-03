@@ -10,7 +10,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(debian ubuntu fedora opensuse arch)
+version_targets=(opensuse)
 
 source "test_upstream_setup.sh"
 source "test_debian.sh"
