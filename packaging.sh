@@ -23,12 +23,6 @@ obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 proj_dir="/home/richard/Projects"
 
-files(){
-    for target in "${version_targets[@]}"; do
-        "${mode}_${target}_files"
-    done
-}
-
 version(){
     for target in "${version_targets[@]}"; do
         "${mode}_${target}_version"
@@ -48,24 +42,7 @@ commit_repos(){
     done
 }
 
-#======================================================================
-# TEST
-#======================================================================
-
-test_meson_version(){
-    cd "$base_dir"
-    sed -i "2s/version: 'v[0-9.]*'/version: 'v$version'/" meson.build
-    cd "$pkg_dir"
-}
-
-test_app_changelog(){
-    cd "$base_dir"
-    date_string=$(date -u '+%Y-%m-%d')
-    sed -i "0,/^## \[[Uu]nreleased\]/s//## [v$version] - $date_string/" "$base_dir/CHANGELOG.md"
-    cd "$pkg_dir"
-}
-
-test_meta_info() {
+meta_info(){
     local metainfo_file="$base_dir/data/com.github.koxt2.datarecovery.metainfo.xml"
     local release_version="${version#v}"
     local release_heading="## [v$version]"
@@ -146,6 +123,28 @@ test_meta_info() {
 
     mv "$metainfo_tmp" "$metainfo_file"
     rm -f "$entry_file"
+}
+
+#======================================================================
+# TEST
+#======================================================================
+test_files(){
+    for target in "${version_targets[@]}"; do
+        "test_${target}_files"
+    done
+}
+
+test_meson_version(){
+    cd "$base_dir"
+    sed -i "2s/version: 'v[0-9.]*'/version: 'v$version'/" meson.build
+    cd "$pkg_dir"
+}
+
+test_app_changelog(){
+    cd "$base_dir"
+    date_string=$(date -u '+%Y-%m-%d')
+    sed -i "0,/^## \[[Uu]nreleased\]/s//## [v$version] - $date_string/" "$base_dir/CHANGELOG.md"
+    cd "$pkg_dir"
 }
 
 test_commit_tag(){
@@ -619,13 +618,13 @@ release_arch_commit(){
 test_main(){
     test_meson_version "$version" "$base_dir" "$pkg_dir"
     test_app_changelog "$version" "$base_dir" "$pkg_dir"
-    test_meta_info "$version" "$base_dir" "$pkg_dir"
+    meta_info "$version" "$base_dir" "$pkg_dir"
 
     test_commit_tag "$version" "$base_dir" "$pkg_dir"
 
     test_create_source_tarball "$version" "$base_dir" "$pkg_dir"
 
-    files "$version" "$obs_dir" "$pkg_dir"
+    test_files "$version" "$obs_dir" "$pkg_dir"
     version "$version" "$obs_dir"
     changelog "$user" "$email" "$version" "$base_dir" "$obs_dir"
 
@@ -637,13 +636,16 @@ test_main(){
 release_main(){
     release_meson_version "$version" "$base_dir"
     release_app_changelog "$version" "$base_dir"
+    meta_info "$version" "$base_dir"
     release_commit_tag "$version" "$base_dir"
+    
     release_github_release "$version" "$base_dir"
 
     release_get_source "$version" "$base_dir"
 
     version "$version" "$pkg_dir"
     changelog "$user" "$email" "$version" "$base_dir" "$pkg_dir"
+    
     commit_repos
 
     release_cleanup
