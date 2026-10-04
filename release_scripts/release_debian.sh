@@ -1,14 +1,5 @@
 debian_version(){
-#    if grep -q "^Version: $version-1$" "$pkg_dir/debian/debian.dsc"; then
-#        return
-#    fi
-
     sed -i "5s/^Version: .*/Version: $version-1/" "$pkg_dir/debian/debian.dsc"
-#    cp "$base_dir/v$version.tar.gz" "$base_dir/v$version.orig.tar.gz"
- #   deb_archive="$base_dir/v$version.orig.tar.gz"
- #   archive_checksum=$(md5sum "$deb_archive" | awk '{print $1}')
- #   archive_size=$(stat --format='%s' "$deb_archive")
- #   sed -i -E "/^Files:/,/^Package-List:/ s|^ [^[:space:]]+ [0-9]+ v?[0-9.]+\.orig\.tar\.gz$| $archive_checksum $archive_size v$version.orig.tar.gz|" "$pkg_dir/debian/debian.dsc"
 }
 
 debian_changelog(){
@@ -38,12 +29,12 @@ $formatted_changelog
 debian_commit() {
     cd "$pkg_dir"
     target_debian_dir="$obs_dir/home:koxt2:debian/datarecovery"
+    find "$target_debian_dir" -mindepth 1 -not -path "$target_debian_dir/.osc" -not -path "$target_debian_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
         cp "debian/debian.$f" "$target_debian_dir/debian.$f"
     done
     cp "$base_dir/v$version.tar.gz" "$target_debian_dir/v$version.orig.tar.gz"
     cd "$obs_dir/home:koxt2:debian/datarecovery"
-    osc update
     osc addremove
     osc commit
 }

@@ -3,14 +3,20 @@ set -euo pipefail
 
 user=koxt2
 email=koxt2@protonmail.com
-version="0.6.1"
+version="0.7.0"
 
 base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 proj_dir="/home/richard/Projects"
 
-version_targets=(ubuntu)
+version_targets=(
+  #arch
+  #debian
+  #ubuntu
+  #fedora
+  opensuse
+)
 
 source "release_upstream_setup.sh"
 source "release_debian.sh"
@@ -27,6 +33,7 @@ version(){
 
 changelog(){
     for target in "${version_targets[@]}"; do
+        [[ "$target" == "arch" ]] && continue
         "${target}_changelog"
     done
 }
@@ -43,10 +50,10 @@ main(){
     #commit_tag "$version" "$base_dir"
     #github_release "$version" "$base_dir"
 
-    get_source "$version" "$base_dir"
+    #get_source "$version" "$base_dir"
 
-    version "$version" "$pkg_dir"
-    changelog "$user" "$email" "$version" "$base_dir" "$pkg_dir"
+    #version "$version" "$pkg_dir"
+    #changelog "$user" "$email" "$version" "$base_dir" "$pkg_dir"
     commit_repos 
 }
 

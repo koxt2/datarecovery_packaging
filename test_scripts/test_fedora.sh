@@ -37,7 +37,6 @@ mv "$target_dir/datarecovery.spec.tmp" "$target_dir/datarecovery.spec"
 
 fedora_commit(){
     cd "$obs_dir/home:koxt2:fedora/datarecovery_test"
-    osc update
     osc addremove
     osc commit
 }

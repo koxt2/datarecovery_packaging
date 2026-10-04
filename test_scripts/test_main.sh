@@ -4,13 +4,19 @@ set -euo pipefail
 
 user=koxt2
 email=koxt2@protonmail.com
-version="0.6.2.WIP"
+version="0.7.0"
 
 base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 
-version_targets=(opensuse)
+version_targets=(
+  arch
+  debian
+  ubuntu
+  fedora
+  opensuse
+)
 
 source "test_upstream_setup.sh"
 source "test_debian.sh"

@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: datarecovery
 Binary: datarecovery
 Architecture: all
-Version: 0.6.1-1
+Version: 0.7.0-1
 Maintainer: koxt2 <koxt2@protonmail.com>
 Homepage: https://github.com/koxt2/DataRecovery
 Standards-Version: 4.5.0

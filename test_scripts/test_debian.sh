@@ -38,7 +38,6 @@ $formatted_changelog
 
 debian_commit(){
     cd "$obs_dir/home:koxt2:debian/datarecovery_test"
-    osc update
     osc addremove
     osc commit
 }

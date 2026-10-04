@@ -19,7 +19,6 @@ arch_version(){
 
 arch_commit(){
     cd "$obs_dir/home:koxt2:arch/datarecovery_test"
-    osc update
     osc addremove
     osc commit
 }
