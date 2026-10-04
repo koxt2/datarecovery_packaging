@@ -1,7 +1,7 @@
 # spec file for package datarecovery (Copr build)
 
 Name:           datarecovery
-Version:        0.6.1
+Version:        0.7.0
 Release:        0
 Summary:        GTK4/Libadwaita application for data recovery
 License:        GPL-2.0-or-later
@@ -61,6 +61,15 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/datarecovery.desktop
 %{_datadir}/polkit-1/actions/datarecovery.policy
 
 %changelog
+* Sun Oct 4 2026 koxt2 <koxt2@protonmail.com> - 0.7.0
+- Option to view a graphical representation of map file after a scan has completed
+- View graphical representation of map file (if one exists) when an image is chosen
+- Fix Fedora rpmlint errors
+- Fixed leftover root owned directories after aborted recovery. 
+- Removed packaging directories
+- Moved Ubuntu package to OBS from Launchpad
+- Formatting corrections
+
 * Fri Sep 18 2026 koxt2 <koxt2@protonmail.com> - 0.6.1
 - Bogus dates in changelog
 
