@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+version="0.7.1"
 
 mode=(
     test
@@ -16,7 +17,6 @@ version_targets=(
 
 user=koxt2
 email=koxt2@protonmail.com
-version="0.7.0"
 
 base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
@@ -142,6 +142,7 @@ $formatted_changelog
 
 test_debian_commit(){
     cd "$obs_dir/home:koxt2:debian/datarecovery_test"
+    osc update
     osc addremove
     osc commit
 }
@@ -184,6 +185,7 @@ $formatted_changelog
 
 test_ubuntu_commit(){
     cd "$obs_dir/home:koxt2:ubuntu/datarecovery_test"
+    osc update
     osc addremove
     osc commit
 }
@@ -225,6 +227,7 @@ mv "$target_dir/datarecovery.spec.tmp" "$target_dir/datarecovery.spec"
 
 test_fedora_commit(){
     cd "$obs_dir/home:koxt2:fedora/datarecovery_test"
+    osc update
     osc addremove
     osc commit
 }
@@ -267,6 +270,7 @@ $osc_formatted_changelog
 
 test_opensuse_commit(){
     cd "$obs_dir/home:koxt2:openSUSE/datarecovery_test"
+    osc update
     osc addremove
     osc commit
 }
@@ -290,6 +294,7 @@ test_arch_version(){
 
 test_arch_commit(){
     cd "$obs_dir/home:koxt2:arch/datarecovery_test"
+    osc update
     osc addremove
     osc commit
 }
