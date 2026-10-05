@@ -75,29 +75,22 @@ test_files(){
 }
 
 test_meson_version(){
-    cd "$base_dir"
-    sed -i "2s/version: 'v[0-9.]*'/version: 'v$version'/" meson.build
-    cd "$pkg_dir"
+    sed -i "2s/version: 'v[0-9.]*'/version: 'v$version'/" "$base_dir/meson.build"
 }
 
 test_app_changelog(){
-    cd "$base_dir"
     date_string=$(date -u '+%Y-%m-%d')
     sed -i "0,/^## \[[Uu]nreleased\]/s//## [v$version] - $date_string/" "$base_dir/CHANGELOG.md"
-    cd "$pkg_dir"
 }
 
 test_commit_tag(){
-    cd "$base_dir"
-    git add .
-    git commit -m "Release v$version"
-    git tag -a v$version -m "Release v$version"
-    cd "$pkg_dir"
+    git -C "$base_dir" add .
+    git -C "$base_dir" commit -m "Release v$version"
+    git -C "$base_dir" tag -a v$version -m "Release v$version"
 }
 
 test_create_source_tarball(){
-    cd "$base_dir"
-    git archive \
+    git -C "$base_dir" archive \
         --format=tar.gz \
         --prefix="DataRecovery-$version/" \
         -o "$pkg_dir/v$version.tar.gz" \
@@ -105,7 +98,6 @@ test_create_source_tarball(){
 }
 
 test_debian_files(){
-    cd "$pkg_dir"
     target_debian_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
     find "$target_debian_dir" -mindepth 1 -not -path "$target_debian_dir/.osc" -not -path "$target_debian_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
@@ -141,14 +133,12 @@ $formatted_changelog
 }
 
 test_debian_commit(){
-    cd "$obs_dir/home:koxt2:debian/datarecovery_test"
-    osc update
-    osc addremove
-    osc commit
+    osc -C "$obs_dir/home:koxt2:debian/datarecovery_test" update
+    osc -C "$obs_dir/home:koxt2:debian/datarecovery_test" addremove
+    osc -C "$obs_dir/home:koxt2:debian/datarecovery_test" commit
 }
 
 test_ubuntu_files(){
-    cd "$pkg_dir"
     target_ubuntu_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
     find "$target_ubuntu_dir" -mindepth 1 -not -path "$target_ubuntu_dir/.osc" -not -path "$target_ubuntu_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
@@ -184,14 +174,12 @@ $formatted_changelog
 }
 
 test_ubuntu_commit(){
-    cd "$obs_dir/home:koxt2:ubuntu/datarecovery_test"
-    osc update
-    osc addremove
-    osc commit
+    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery_test" update
+    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery_test" addremove
+    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery_test" commit
 }
 
 test_fedora_files(){
-    cd "$pkg_dir"
     target_dir="$obs_dir/home:koxt2:fedora/datarecovery_test"
     find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     cp "copr/datarecovery.spec" "$target_dir/datarecovery.spec"
@@ -226,14 +214,12 @@ mv "$target_dir/datarecovery.spec.tmp" "$target_dir/datarecovery.spec"
 }
 
 test_fedora_commit(){
-    cd "$obs_dir/home:koxt2:fedora/datarecovery_test"
-    osc update
-    osc addremove
-    osc commit
+    osc -C "$obs_dir/home:koxt2:fedora/datarecovery_test" update
+    osc -C "$obs_dir/home:koxt2:fedora/datarecovery_test" addremove
+    osc -C "$obs_dir/home:koxt2:fedora/datarecovery_test" commit
 }
 
 test_opensuse_files(){
-    cd "$pkg_dir"
     target_dir="$obs_dir/home:koxt2:openSUSE/datarecovery_test"
     find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     cp "suse/datarecovery.spec" "$target_dir/datarecovery.spec"
@@ -269,14 +255,12 @@ $osc_formatted_changelog
 }
 
 test_opensuse_commit(){
-    cd "$obs_dir/home:koxt2:openSUSE/datarecovery_test"
-    osc update
-    osc addremove
-    osc commit
+    osc -C "$obs_dir/home:koxt2:openSUSE/datarecovery_test" update
+    osc -C "$obs_dir/home:koxt2:openSUSE/datarecovery_test" addremove
+    osc -C "$obs_dir/home:koxt2:openSUSE/datarecovery_test" commit
 }
 
 test_arch_files(){
-    cd "$pkg_dir"
     target_dir="$obs_dir/home:koxt2:arch/datarecovery_test"
     find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     cp "aur/PKGBUILD" "$target_dir/PKGBUILD"
@@ -293,18 +277,15 @@ test_arch_version(){
 }
 
 test_arch_commit(){
-    cd "$obs_dir/home:koxt2:arch/datarecovery_test"
-    osc update
-    osc addremove
-    osc commit
+    osc -C "$obs_dir/home:koxt2:arch/datarecovery_test" update
+    osc -C "$obs_dir/home:koxt2:arch/datarecovery_test" addremove
+    osc -C "$obs_dir/home:koxt2:arch/datarecovery_test" commit
 }
 
 test_cleanup(){
-    cd "$pkg_dir"
     rm ./*.tar.gz
-    cd "$base_dir"
-    git tag -d "v$version"
-    git reset origin/main --hard
+    git -C "$base_dir" tag -d "v$version"
+    git -C "$base_dir" reset origin/main --hard
 }
 
 #======================================================================
@@ -321,19 +302,13 @@ release_app_changelog(){
 }
 
 release_commit_tag(){
-    cd $base_dir
-    git add .
-    git commit -m "Release v$version"
-    git tag -a v$version -m "Release v$version"
-    git push origin main --tags
+    git -C $base_dir add .
+    git -C $base_dir commit -m "Release v$version"
+    git -C $base_dir tag -a v$version -m "Release v$version"
+    git -C $base_dir push origin main --tags
 }
 
 release_github_release(){
-    command -v gh >/dev/null || {
-        printf '%s\n' 'GitHub CLI (gh) is required to create the release.' >&2
-        return 1
-    }
-
     notes_file=$(mktemp)
     awk -v release="v$version" '
         index($0, "## [" release "]") == 1 { found=1; next }
@@ -350,14 +325,12 @@ release_github_release(){
 }
 
 release_get_source(){
-    cd "$base_dir"
-    wget https://github.com/koxt2/DataRecovery/archive/refs/tags/v$version.tar.gz
+    wget -P "$base_dir" https://github.com/koxt2/DataRecovery/archive/refs/tags/v$version.tar.gz
     archive="v$version.tar.gz"
 }   
 
 release_cleanup(){
-    cd "$pkg_dir"
-    rm ./*.tar.gz
+    rm -f "$base_dir"/v$version.tar.gz*
 }
 
 release_debian_version(){
@@ -389,16 +362,14 @@ $formatted_changelog
 }
 
 release_debian_commit() {
-    cd "$pkg_dir"
     target_debian_dir="$obs_dir/home:koxt2:debian/datarecovery"
     find "$target_debian_dir" -mindepth 1 -not -path "$target_debian_dir/.osc" -not -path "$target_debian_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
         cp "debian/debian.$f" "$target_debian_dir/debian.$f"
     done
     cp "$base_dir/v$version.tar.gz" "$target_debian_dir/v$version.orig.tar.gz"
-    cd "$obs_dir/home:koxt2:debian/datarecovery"
-    osc addremove
-    osc commit
+    osc -C "$obs_dir/home:koxt2:debian/datarecovery" addremove
+    osc -C "$obs_dir/home:koxt2:debian/datarecovery" commit
 }
 
 release_ubuntu_version(){
@@ -430,16 +401,14 @@ $formatted_changelog
 }
 
 release_ubuntu_commit() {
-    cd "$pkg_dir"
     target_ubuntu_dir="$obs_dir/home:koxt2:ubuntu/datarecovery"
     find "$target_ubuntu_dir" -mindepth 1 -not -path "$target_ubuntu_dir/.osc" -not -path "$target_ubuntu_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
         cp "debian/debian.$f" "$target_ubuntu_dir/debian.$f"
     done
     cp "$base_dir/v$version.tar.gz" "$target_ubuntu_dir/v$version.orig.tar.gz"
-    cd "$obs_dir/home:koxt2:ubuntu/datarecovery"
-    osc addremove
-    osc commit
+    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery" addremove
+    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery" commit
 }
 
 release_fedora_version(){
@@ -511,20 +480,18 @@ $osc_formatted_changelog
 }
 
 release_opensuse_commit(){
-    cd "$pkg_dir/suse"
     target_suse_dir="$obs_dir/home:koxt2:openSUSE/datarecovery"
     find "$target_suse_dir" -mindepth 1 \
         -not -path "$target_suse_dir/.osc" -not -path "$target_suse_dir/.osc/*" \
         -not -path "$target_suse_dir/.git" -not -path "$target_suse_dir/.git/*" \
         -not -name .gitignore -not -name .gitattributes -delete
-    for f in datarecovery.changes datarecovery.spec datarecovery-rpmlintrc; do
+    for f in  suse/datarecovery.changes suse/datarecovery.spec suse/datarecovery-rpmlintrc; do
         cp "$f" "$target_suse_dir/$f"
     done
     cp "$base_dir/v$version.tar.gz" "$target_suse_dir"
-    cd "$obs_dir/home:koxt2:openSUSE/datarecovery"
-    git add -A
-    git commit -m "Update to $version"
-    git push
+    git -C "$obs_dir/home:koxt2:openSUSE/datarecovery" add -A
+    git -C "$obs_dir/home:koxt2:openSUSE/datarecovery" commit -m "Update to $version"
+    git -C "$obs_dir/home:koxt2:openSUSE/datarecovery" push
 }
 
 release_arch_version(){
