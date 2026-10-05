@@ -1,3 +1,8 @@
+datarecovery (0.7.1-1) UNRELEASED; urgency=medium
+  * metainfo file update
+
+ -- koxt2 <koxt2@protonmail.com> Mon, 5 Oct 2026 22:49:47 +0000
+ 
 datarecovery (0.7.0-1) UNRELEASED; urgency=medium
   * Option to view a graphical representation of map file after a scan has completed
   * View graphical representation of map file (if one exists) when an image is chosen

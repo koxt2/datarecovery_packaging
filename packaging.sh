@@ -5,8 +5,8 @@ trap 'if [[ ${FUNCNAME[0]} == test_arch_files ]]; then printf "Arch files moved\
 version="0.7.1"
 
 mode=(
-    test
-    #release
+    #test
+    release
 )
 
 version_targets=(
@@ -24,6 +24,7 @@ base_dir="/home/richard/Projects/github/DataRecovery"
 obs_dir="/home/richard/Projects/obs"
 pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 proj_dir="/home/richard/Projects"
+aur_dir="$proj_dir/aur/datarecovery"
 
 version(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
@@ -358,6 +359,7 @@ release_commit_tag(){
 }
 
 release_github_release(){
+    # To login - gh auth login
     printf 'Starting %s\n' "${FUNCNAME[0]}"
     notes_file=$(mktemp)
     awk -v release="v$version" '
@@ -383,6 +385,9 @@ release_get_source(){
 release_cleanup(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
     rm -f "$base_dir"/v$version.tar.gz*
+    git add .
+    git commit -m "v$version"
+    git push origin main
 }
 
 release_debian_version(){
@@ -553,8 +558,8 @@ release_opensuse_commit(){
         -not -path "$target_suse_dir/.osc" -not -path "$target_suse_dir/.osc/*" \
         -not -path "$target_suse_dir/.git" -not -path "$target_suse_dir/.git/*" \
         -not -name .gitignore -not -name .gitattributes -delete
-    for f in  suse/datarecovery.changes suse/datarecovery.spec suse/datarecovery-rpmlintrc; do
-        cp "$f" "$target_suse_dir/$f"
+    for f in datarecovery.changes datarecovery.spec datarecovery-rpmlintrc; do
+        cp "suse/$f" "$target_suse_dir/$f"
     done
     cp "$base_dir/v$version.tar.gz" "$target_suse_dir"
     git -C "$obs_dir/home:koxt2:openSUSE/datarecovery" add -A
@@ -573,6 +578,9 @@ release_arch_version(){
 
 release_arch_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
+
+    # needs git clone from aur
+    #git clone ssh://aur@aur.archlinux.org/datarecovery.git "$aur_dir"
     # ssh-keygen -t ed25519 -C "richard@opensusetumbleweed" -f ~/.ssh/arch-tumbleweed
     # cat ~/.ssh/arch-tumbleweed.pub
     # Then add printout to aur profile
@@ -591,10 +599,11 @@ release_arch_commit(){
     # Accept key from aur
     #ssh -T aur@aur.archlinux.org
     
-    target_dir="$pkg_dir/aur"
-    git -C "$target_dir" add PKGBUILD .SRCINFO
-    git -C "$target_dir" commit -m "Update to v$version"
-    git -C "$target_dir" push
+    cp "$pkg_dir/aur/PKGBUILD" "$aur_dir/PKGBUILD"
+    cp "$pkg_dir/aur/.SRCINFO" "$aur_dir/.SRCINFO"
+    git -C "$aur_dir" add PKGBUILD .SRCINFO
+    git -C "$aur_dir" commit -m "Update to v$version"
+    git -C "$aur_dir" push
 }
 
 test_main(){
@@ -618,19 +627,19 @@ test_main(){
 
 release_main(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
-    release_meson_version "$version" "$base_dir"
-    release_app_changelog "$version" "$base_dir"
-    meta_info "$version" "$base_dir"
-    release_commit_tag "$version" "$base_dir"
-    
-    release_github_release "$version" "$base_dir"
-
-    release_get_source "$version" "$base_dir"
-
-    version "$version" "$pkg_dir"
-    changelog "$user" "$email" "$version" "$base_dir" "$pkg_dir"
-    
-    commit_repos
+    #release_meson_version "$version" "$base_dir"
+    #release_app_changelog "$version" "$base_dir"
+    #meta_info "$version" "$base_dir"
+    #release_commit_tag "$version" "$base_dir"
+    #
+    #release_github_release "$version" "$base_dir"
+#
+    #release_get_source "$version" "$base_dir"
+#
+    #version "$version" "$pkg_dir"
+    #changelog "$user" "$email" "$version" "$base_dir" "$pkg_dir"
+    #
+    #commit_repos
 
     release_cleanup
 }
