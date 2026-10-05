@@ -148,9 +148,12 @@ $formatted_changelog
 
 test_debian_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
-    osc -C "$obs_dir/home:koxt2:debian/datarecovery_test" update
-    osc -C "$obs_dir/home:koxt2:debian/datarecovery_test" addremove
-    osc -C "$obs_dir/home:koxt2:debian/datarecovery_test" commit
+    target_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
+    cd "$target_dir"
+    osc update
+    osc addremove
+    osc commit
+    cd "$pkg_dir"
 }
 
 test_ubuntu_files(){
@@ -193,9 +196,12 @@ $formatted_changelog
 
 test_ubuntu_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
-    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery_test" update
-    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery_test" addremove
-    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery_test" commit
+    target_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
+    cd "$target_dir"
+    osc update
+    osc addremove
+    osc commit
+    cd "$pkg_dir"
 }
 
 test_fedora_files(){
@@ -237,9 +243,12 @@ mv "$target_dir/datarecovery.spec.tmp" "$target_dir/datarecovery.spec"
 
 test_fedora_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
-    osc -C "$obs_dir/home:koxt2:fedora/datarecovery_test" update
-    osc -C "$obs_dir/home:koxt2:fedora/datarecovery_test" addremove
-    osc -C "$obs_dir/home:koxt2:fedora/datarecovery_test" commit
+    target_dir="$obs_dir/home:koxt2:fedora/datarecovery_test"
+    cd "$target_dir"
+    osc update
+    osc addremove
+    osc commit
+    cd "$pkg_dir"
 }
 
 test_opensuse_files(){
@@ -282,9 +291,12 @@ $osc_formatted_changelog
 
 test_opensuse_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
-    osc -C "$obs_dir/home:koxt2:openSUSE/datarecovery_test" update
-    osc -C "$obs_dir/home:koxt2:openSUSE/datarecovery_test" addremove
-    osc -C "$obs_dir/home:koxt2:openSUSE/datarecovery_test" commit
+    target_dir="$obs_dir/home:koxt2:openSUSE/datarecovery_test"
+    cd "$target_dir"
+    osc update
+    osc addremove
+    osc commit
+    cd "$pkg_dir"
 }
 
 test_arch_files(){
@@ -307,9 +319,12 @@ test_arch_version(){
 
 test_arch_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
-    osc -C "$obs_dir/home:koxt2:arch/datarecovery_test" update
-    osc -C "$obs_dir/home:koxt2:arch/datarecovery_test" addremove
-    osc -C "$obs_dir/home:koxt2:arch/datarecovery_test" commit
+    target_dir="$obs_dir/home:koxt2:arch/datarecovery_test"
+    cd "$target_dir"
+    osc update
+    osc addremove
+    osc commit
+    cd "$pkg_dir"
 }
 
 test_cleanup(){
@@ -408,8 +423,10 @@ release_debian_commit() {
         cp "debian/debian.$f" "$target_debian_dir/debian.$f"
     done
     cp "$base_dir/v$version.tar.gz" "$target_debian_dir/v$version.orig.tar.gz"
-    osc -C "$obs_dir/home:koxt2:debian/datarecovery" addremove
-    osc -C "$obs_dir/home:koxt2:debian/datarecovery" commit
+    cd "$target_debian_dir"
+    osc addremove
+    osc commit
+    cd "$pkg_dir"
 }
 
 release_ubuntu_version(){
@@ -450,8 +467,10 @@ release_ubuntu_commit() {
         cp "debian/debian.$f" "$target_ubuntu_dir/debian.$f"
     done
     cp "$base_dir/v$version.tar.gz" "$target_ubuntu_dir/v$version.orig.tar.gz"
-    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery" addremove
-    osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery" commit
+    cd "$target_ubuntu_dir"
+    osc addremove
+    osc commit
+    cd "$pkg_dir"
 }
 
 release_fedora_version(){
