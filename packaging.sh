@@ -1,5 +1,7 @@
 #!/bin/bash
 set -euo pipefail
+set -T
+trap 'if [[ ${FUNCNAME[0]} == test_arch_files ]]; then printf "Arch files moved\n"; else printf "Finished %s\n" "${FUNCNAME[0]}"; fi' RETURN
 version="0.7.1"
 
 mode=(
@@ -24,12 +26,14 @@ pkg_dir="/home/richard/Projects/github/datarecovery_packaging"
 proj_dir="/home/richard/Projects"
 
 version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     for target in "${version_targets[@]}"; do
         "${mode}_${target}_version"
     done
 }
 
 changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     for target in "${version_targets[@]}"; do
         [[ "$target" == "arch" ]] && continue
         "${mode}_${target}_changelog"
@@ -37,12 +41,14 @@ changelog(){
 }
 
 commit_repos(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     for target in "${version_targets[@]}"; do
         "${mode}_${target}_commit"
     done
 }
 
 meta_info(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     metainfo_file="$base_dir/data/com.github.koxt2.datarecovery.metainfo.xml"
     date_string=$(date -u '+%Y-%m-%d')
     items=$(sed -n "/^## \[v$version\]/,/^## \[/p" "$base_dir/CHANGELOG.md" |
@@ -69,27 +75,32 @@ $items
 # TEST
 #======================================================================
 test_files(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     for target in "${version_targets[@]}"; do
         "test_${target}_files"
     done
 }
 
 test_meson_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "2s/version: 'v[0-9.]*'/version: 'v$version'/" "$base_dir/meson.build"
 }
 
 test_app_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     date_string=$(date -u '+%Y-%m-%d')
     sed -i "0,/^## \[[Uu]nreleased\]/s//## [v$version] - $date_string/" "$base_dir/CHANGELOG.md"
 }
 
 test_commit_tag(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     git -C "$base_dir" add .
     git -C "$base_dir" commit -m "Release v$version"
     git -C "$base_dir" tag -a v$version -m "Release v$version"
 }
 
 test_create_source_tarball(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     git -C "$base_dir" archive \
         --format=tar.gz \
         --prefix="DataRecovery-$version/" \
@@ -98,6 +109,7 @@ test_create_source_tarball(){
 }
 
 test_debian_files(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_debian_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
     find "$target_debian_dir" -mindepth 1 -not -path "$target_debian_dir/.osc" -not -path "$target_debian_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
@@ -108,10 +120,12 @@ test_debian_files(){
 }
 
 test_debian_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "s/^Version: .*/Version: $version-1/" "$obs_dir/home:koxt2:debian/datarecovery_test/debian.dsc"
 }
 
 test_debian_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_debian_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
     date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
     formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" $base_dir/CHANGELOG.md |
@@ -133,12 +147,14 @@ $formatted_changelog
 }
 
 test_debian_commit(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     osc -C "$obs_dir/home:koxt2:debian/datarecovery_test" update
     osc -C "$obs_dir/home:koxt2:debian/datarecovery_test" addremove
     osc -C "$obs_dir/home:koxt2:debian/datarecovery_test" commit
 }
 
 test_ubuntu_files(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_ubuntu_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
     find "$target_ubuntu_dir" -mindepth 1 -not -path "$target_ubuntu_dir/.osc" -not -path "$target_ubuntu_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
@@ -149,10 +165,12 @@ test_ubuntu_files(){
 }
 
 test_ubuntu_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "s/^Version: .*/Version: $version-1/" "$obs_dir/home:koxt2:ubuntu/datarecovery_test/debian.dsc"
 }
 
 test_ubuntu_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_ubuntu_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
     date_string=$(LC_ALL=C date -u '+%a, %-d %b %Y %H:%M:%S +0000')
     formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" $base_dir/CHANGELOG.md |
@@ -174,12 +192,14 @@ $formatted_changelog
 }
 
 test_ubuntu_commit(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery_test" update
     osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery_test" addremove
     osc -C "$obs_dir/home:koxt2:ubuntu/datarecovery_test" commit
 }
 
 test_fedora_files(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$obs_dir/home:koxt2:fedora/datarecovery_test"
     find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     cp "copr/datarecovery.spec" "$target_dir/datarecovery.spec"
@@ -188,10 +208,12 @@ test_fedora_files(){
 }
 
 test_fedora_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "4s/^Version:        .*/Version:        $version/" "$obs_dir/home:koxt2:fedora/datarecovery_test/datarecovery.spec"
 }   
 
 test_fedora_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$obs_dir/home:koxt2:fedora/datarecovery_test"
         fed_date_string=$(LC_ALL=C date -u '+%a %b %-d %Y')
     fed_formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" "$base_dir/CHANGELOG.md" |
@@ -214,12 +236,14 @@ mv "$target_dir/datarecovery.spec.tmp" "$target_dir/datarecovery.spec"
 }
 
 test_fedora_commit(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     osc -C "$obs_dir/home:koxt2:fedora/datarecovery_test" update
     osc -C "$obs_dir/home:koxt2:fedora/datarecovery_test" addremove
     osc -C "$obs_dir/home:koxt2:fedora/datarecovery_test" commit
 }
 
 test_opensuse_files(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$obs_dir/home:koxt2:openSUSE/datarecovery_test"
     find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     cp "suse/datarecovery.spec" "$target_dir/datarecovery.spec"
@@ -229,10 +253,12 @@ test_opensuse_files(){
 }
 
 test_opensuse_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "20s/^Version:        .*/Version:        $version/" "$obs_dir/home:koxt2:openSUSE/datarecovery_test/datarecovery.spec"
 }
 
 test_opensuse_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$obs_dir/home:koxt2:openSUSE/datarecovery_test"
     osc_date_string=$(LC_ALL=C date -u '+%a %b %d %H:%M:%S UTC %Y')
     osc_formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" "$base_dir/CHANGELOG.md" |
@@ -255,12 +281,14 @@ $osc_formatted_changelog
 }
 
 test_opensuse_commit(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     osc -C "$obs_dir/home:koxt2:openSUSE/datarecovery_test" update
     osc -C "$obs_dir/home:koxt2:openSUSE/datarecovery_test" addremove
     osc -C "$obs_dir/home:koxt2:openSUSE/datarecovery_test" commit
 }
 
 test_arch_files(){
+    printf 'Moving arch files\n'
     target_dir="$obs_dir/home:koxt2:arch/datarecovery_test"
     find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     cp "aur/PKGBUILD" "$target_dir/PKGBUILD"
@@ -272,17 +300,20 @@ test_arch_files(){
 }
 
 test_arch_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "s/^pkgver=.*/pkgver=$version/" "$obs_dir/home:koxt2:arch/datarecovery_test/PKGBUILD"
     
 }
 
 test_arch_commit(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     osc -C "$obs_dir/home:koxt2:arch/datarecovery_test" update
     osc -C "$obs_dir/home:koxt2:arch/datarecovery_test" addremove
     osc -C "$obs_dir/home:koxt2:arch/datarecovery_test" commit
 }
 
 test_cleanup(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     rm ./*.tar.gz
     git -C "$base_dir" tag -d "v$version"
     git -C "$base_dir" reset origin/main --hard
@@ -293,15 +324,18 @@ test_cleanup(){
 #======================================================================
 
 release_meson_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "2s/version: 'v[0-9.]*'/version: 'v$version'/" "$base_dir/meson.build"
 }
 
 release_app_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     date_string=$(date -u '+%Y-%m-%d')
     sed -i "0,/^## \[[Uu]nreleased\]/s//## [v$version] - $date_string/" "$base_dir/CHANGELOG.md"
 }
 
 release_commit_tag(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     git -C $base_dir add .
     git -C $base_dir commit -m "Release v$version"
     git -C $base_dir tag -a v$version -m "Release v$version"
@@ -309,6 +343,7 @@ release_commit_tag(){
 }
 
 release_github_release(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     notes_file=$(mktemp)
     awk -v release="v$version" '
         index($0, "## [" release "]") == 1 { found=1; next }
@@ -325,19 +360,23 @@ release_github_release(){
 }
 
 release_get_source(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     wget -P "$base_dir" https://github.com/koxt2/DataRecovery/archive/refs/tags/v$version.tar.gz
     archive="v$version.tar.gz"
 }   
 
 release_cleanup(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     rm -f "$base_dir"/v$version.tar.gz*
 }
 
 release_debian_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "5s/^Version: .*/Version: $version-1/" "$pkg_dir/debian/debian.dsc"
 }
 
 release_debian_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     if grep -q "^datarecovery ($version-1) " "$pkg_dir/debian/debian.changelog"; then
         return
     fi
@@ -362,6 +401,7 @@ $formatted_changelog
 }
 
 release_debian_commit() {
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_debian_dir="$obs_dir/home:koxt2:debian/datarecovery"
     find "$target_debian_dir" -mindepth 1 -not -path "$target_debian_dir/.osc" -not -path "$target_debian_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
@@ -373,10 +413,12 @@ release_debian_commit() {
 }
 
 release_ubuntu_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "5s/^Version: .*/Version: $version-1/" "$pkg_dir/debian/debian.dsc"
 }
 
 release_ubuntu_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     if grep -q "^datarecovery ($version-1) " "$pkg_dir/debian/debian.changelog"; then
         return
     fi
@@ -401,6 +443,7 @@ $formatted_changelog
 }
 
 release_ubuntu_commit() {
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_ubuntu_dir="$obs_dir/home:koxt2:ubuntu/datarecovery"
     find "$target_ubuntu_dir" -mindepth 1 -not -path "$target_ubuntu_dir/.osc" -not -path "$target_ubuntu_dir/.osc/*" -delete
     for f in changelog compat control copyright rules dsc; do
@@ -412,10 +455,12 @@ release_ubuntu_commit() {
 }
 
 release_fedora_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "4s/^Version:        .*/Version:        $version/" "$pkg_dir/copr/datarecovery.spec"
 }
 
 release_fedora_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     fed_date_string=$(LC_ALL=C date -u '+%a %b %-d %Y')
     fed_formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" "$base_dir/CHANGELOG.md" |
         sed '$d' |
@@ -437,6 +482,7 @@ mv "$pkg_dir/copr/datarecovery.spec.tmp" "$pkg_dir/copr/datarecovery.spec"
 }
 
 release_fedora_commit() {
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     #copr-cli isn't available in opensuse sooo....
     #python3 -m venv ~/.venvs/copr && ~/.venvs/copr/bin/pip install copr-cli
     #ln -s ~/.venvs/copr/bin/copr-cli ~/.local/bin/copr-cli
@@ -454,10 +500,12 @@ release_fedora_commit() {
 }
 
 release_opensuse_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "20s/^Version:        .*/Version:        $version/" "$pkg_dir/suse/datarecovery.spec"
 }
 
 release_opensuse_changelog(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$pkg_dir/suse"
     osc_date_string=$(LC_ALL=C date -u '+%a %b %d %H:%M:%S UTC %Y')
     osc_formatted_changelog=$(sed -n "/^## \[v$version\]/,/^## \[/p" "$base_dir/CHANGELOG.md" |
@@ -480,6 +528,7 @@ $osc_formatted_changelog
 }
 
 release_opensuse_commit(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_suse_dir="$obs_dir/home:koxt2:openSUSE/datarecovery"
     find "$target_suse_dir" -mindepth 1 \
         -not -path "$target_suse_dir/.osc" -not -path "$target_suse_dir/.osc/*" \
@@ -495,6 +544,7 @@ release_opensuse_commit(){
 }
 
 release_arch_version(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     sed -i "s/^pkgver=.*/pkgver=$version/" "$pkg_dir/aur/PKGBUILD"
     sed -i -E \
         -e "s|^([[:space:]]*pkgver = ).*|\\1$version|" \
@@ -503,6 +553,7 @@ release_arch_version(){
 }
 
 release_arch_commit(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     # ssh-keygen -t ed25519 -C "richard@opensusetumbleweed" -f ~/.ssh/arch-tumbleweed
     # cat ~/.ssh/arch-tumbleweed.pub
     # Then add printout to aur profile
@@ -528,6 +579,7 @@ release_arch_commit(){
 }
 
 test_main(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     test_meson_version "$version" "$base_dir" "$pkg_dir"
     test_app_changelog "$version" "$base_dir" "$pkg_dir"
     meta_info "$version" "$base_dir" "$pkg_dir"
@@ -546,6 +598,7 @@ test_main(){
 }
 
 release_main(){
+    printf 'Starting %s\n' "${FUNCNAME[0]}"
     release_meson_version "$version" "$base_dir"
     release_app_changelog "$version" "$base_dir"
     meta_info "$version" "$base_dir"
