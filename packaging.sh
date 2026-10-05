@@ -150,7 +150,7 @@ test_debian_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$obs_dir/home:koxt2:debian/datarecovery_test"
     cd "$target_dir"
-    osc update
+    #osc update
     osc addremove
     osc commit
     cd "$pkg_dir"
@@ -198,7 +198,7 @@ test_ubuntu_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$obs_dir/home:koxt2:ubuntu/datarecovery_test"
     cd "$target_dir"
-    osc update
+    #osc update
     osc addremove
     osc commit
     cd "$pkg_dir"
@@ -245,7 +245,7 @@ test_fedora_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$obs_dir/home:koxt2:fedora/datarecovery_test"
     cd "$target_dir"
-    osc update
+    #osc update
     osc addremove
     osc commit
     cd "$pkg_dir"
@@ -293,7 +293,7 @@ test_opensuse_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$obs_dir/home:koxt2:openSUSE/datarecovery_test"
     cd "$target_dir"
-    osc update
+    #osc update
     osc addremove
     osc commit
     cd "$pkg_dir"
@@ -321,7 +321,7 @@ test_arch_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
     target_dir="$obs_dir/home:koxt2:arch/datarecovery_test"
     cd "$target_dir"
-    osc update
+    #osc update
     osc addremove
     osc commit
     cd "$pkg_dir"
