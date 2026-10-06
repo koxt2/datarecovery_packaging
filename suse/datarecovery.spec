@@ -21,6 +21,7 @@ Version:        0.7.1
 Release:        0
 Summary:        GTK4/Libadwaita application for data recovery
 License:        GPL-2.0-or-later
+Group:          System/Filesystems
 BuildArch:      noarch
 URL:            https://github.com/koxt2/DataRecovery
 Source0:        https://github.com/koxt2/DataRecovery/archive/refs/tags/v%version.tar.gz
