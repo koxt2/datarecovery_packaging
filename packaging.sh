@@ -627,19 +627,19 @@ test_main(){
 
 release_main(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
-    #release_meson_version "$version" "$base_dir"
-    #release_app_changelog "$version" "$base_dir"
-    #meta_info "$version" "$base_dir"
-    #release_commit_tag "$version" "$base_dir"
-    #
-    #release_github_release "$version" "$base_dir"
-#
-    #release_get_source "$version" "$base_dir"
-#
-    #version "$version" "$pkg_dir"
-    #changelog "$user" "$email" "$version" "$base_dir" "$pkg_dir"
-    #
-    #commit_repos
+    release_meson_version "$version" "$base_dir"
+    release_app_changelog "$version" "$base_dir"
+    meta_info "$version" "$base_dir"
+    release_commit_tag "$version" "$base_dir"
+    
+    release_github_release "$version" "$base_dir"
+
+    release_get_source "$version" "$base_dir"
+
+    version "$version" "$pkg_dir"
+    changelog "$user" "$email" "$version" "$base_dir" "$pkg_dir"
+    
+    commit_repos
 
     release_cleanup
 }
