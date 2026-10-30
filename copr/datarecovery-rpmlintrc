@@ -1,4 +1,1 @@
 addFilter("branding-requires-unversioned hicolor-icon-theme")
-addFilter("spelling-error.*ddrescue")
-addFilter("spelling-error.*rdfind")
-addFilter("explicit-lib-dependency")

@@ -2,17 +2,17 @@
 set -euo pipefail
 set -T
 trap 'if [[ ${FUNCNAME[0]} == test_arch_files ]]; then printf "Arch files moved\n"; else printf "Finished %s\n" "${FUNCNAME[0]}"; fi' RETURN
-version="0.7.1"
+version="0.7.2"
 
 mode=(
-    #test
-    release
+    test
+    #release
 )
 
 version_targets=(
-  arch
-  debian
-  ubuntu
+  #arch
+  #debian
+  #ubuntu
   fedora
   opensuse
 )

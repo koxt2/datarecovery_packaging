@@ -54,13 +54,15 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 %license LICENSE
 %doc README.md CHANGELOG.md
 %{_bindir}/datarecovery
-%{_bindir}/datarecovery-pkexec-helper
+%{_libexecdir}/datarecovery-pkexec-helper
 %{_datadir}/datarecovery/
+%{_mandir}/man1/datarecovery.1*
 %{_datadir}/applications/datarecovery.desktop
 %{_datadir}/dbus-1/services/com.github.koxt2.datarecovery.service
 %{_datadir}/icons/hicolor/*/apps/com.github.koxt2.datarecovery*.*
 %{_datadir}/metainfo/com.github.koxt2.datarecovery.metainfo.xml
 %{_datadir}/polkit-1/actions/datarecovery.policy
+
 
 %changelog
 %autochangelog

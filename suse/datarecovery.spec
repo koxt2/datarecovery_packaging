@@ -24,7 +24,7 @@ License:        GPL-2.0-or-later
 Group:          System/Filesystems
 BuildArch:      noarch
 URL:            https://github.com/koxt2/DataRecovery
-Source0:        https://github.com/koxt2/DataRecovery/archive/refs/tags/v%version.tar.gz
+Source0:        %url/archive/refs/tags/v%version.tar.gz
 Source1:        %name-rpmlintrc
 
 BuildRequires:  desktop-file-utils
@@ -65,13 +65,15 @@ removes duplicates using rdfind.
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/datarecovery.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 
 %files
 %license LICENSE
-%doc README.md
+%doc README.md CHANGELOG.md
 %{_bindir}/datarecovery
-%{_bindir}/datarecovery-pkexec-helper
+%{_libexecdir}/datarecovery-pkexec-helper
 %{_datadir}/datarecovery/
+%{_mandir}/man1/datarecovery.1*
 %{_datadir}/applications/datarecovery.desktop
 %{_datadir}/dbus-1/services/com.github.koxt2.datarecovery.service
 %{_datadir}/icons/hicolor/*/apps/com.github.koxt2.datarecovery*.*
