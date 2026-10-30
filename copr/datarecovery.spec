@@ -1,7 +1,7 @@
 # spec file for package datarecovery (Copr build)
 
 Name:           datarecovery
-Version:        0.7.1
+Version:        0.7.2
 Release:        %autorelease
 Summary:        GTK4/Libadwaita application for data recovery
 License:        GPL-2.0-or-later
@@ -65,4 +65,16 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 
 
 %changelog
+* Fri Oct 30 2026 koxt2 <koxt2@protonmail.com> - 0.7.2
+- Man page
+- datarecovery --version now reports correctly
+- Moved datarecovery-pkexec-helper from /usr/bin to /usr/libexec
+- Updated license address
+
+* Fri Oct 30 2026 koxt2 <koxt2@protonmail.com> - 0.7.2
+- Man page
+- datarecovery --version now reports correctly
+- Moved datarecovery-pkexec-helper from /usr/bin to /usr/libexec
+- Updated license address
+
 %autochangelog
