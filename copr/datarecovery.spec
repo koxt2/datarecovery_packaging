@@ -7,7 +7,7 @@ Summary:        GTK4/Libadwaita application for data recovery
 License:        GPL-2.0-or-later
 BuildArch:      noarch
 URL:            https://github.com/koxt2/DataRecovery
-Source0:        https://github.com/koxt2/DataRecovery/archive/refs/tags/v%{version}.tar.gz
+Source0:        %url/archive/refs/tags/v%{version}.tar.gz
 Source1:        %name-rpmlintrc
 
 BuildRequires:  meson >= 1.0.0
@@ -17,6 +17,7 @@ BuildRequires:  pkgconfig(gtk4)
 BuildRequires:  pkgconfig(libadwaita-1)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
 
 Requires:       python3
 Requires:       python3-gobject
@@ -47,6 +48,7 @@ organizes them by file type, and optionally removes duplicates using rdfind.
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/datarecovery.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 
 %files
 %license LICENSE
