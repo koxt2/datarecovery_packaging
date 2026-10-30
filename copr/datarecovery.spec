@@ -8,7 +8,6 @@ License:        GPL-2.0-or-later
 BuildArch:      noarch
 URL:            https://github.com/koxt2/DataRecovery
 Source0:        %url/archive/refs/tags/v%{version}.tar.gz
-Source1:        %name-rpmlintrc
 
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  pkgconfig
@@ -21,8 +20,8 @@ BuildRequires:  libappstream-glib
 
 Requires:       python3
 Requires:       python3-gobject
-Requires:       gtk4
-Requires:       libadwaita
+Requires:       typelib(Adw) = 1
+Requires:       typelib(Gtk) = 4.0
 Requires:       ddrescue
 Requires:       testdisk
 Requires:       rdfind
@@ -32,9 +31,10 @@ Requires:       hicolor-icon-theme
 Requires:       dbus-common
 
 %description
-A GTK4/Libadwaita application for data recovery using ddrescue and PhotoRec. 
-Recovers all files (not just deleted ones) from storage devices or disk images, 
-organizes them by file type, and optionally removes duplicates using rdfind.
+A GTK4/Libadwaita application for data recovery.
+Uses GNU dd-rescue and PhotoRec.
+Recovers all files (not just deleted ones) from storage devices or disk images,
+organizes them by file type, and can optionally remove duplicate files.
 
 %prep
 %autosetup -n DataRecovery-%{version}

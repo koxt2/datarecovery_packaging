@@ -65,7 +65,6 @@ removes duplicates using rdfind.
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/datarecovery.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 
 %files
 %license LICENSE

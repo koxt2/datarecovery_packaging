@@ -13,7 +13,7 @@ version_targets=(
   #arch
   #debian
   #ubuntu
-  fedora
+  #fedora
   opensuse
 )
 
@@ -210,7 +210,7 @@ test_fedora_files(){
     target_dir="$obs_dir/home:koxt2:fedora/datarecovery_test"
     find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     cp "copr/datarecovery.spec" "$target_dir/datarecovery.spec"
-    cp "copr/datarecovery-rpmlintrc" "$target_dir/datarecovery-rpmlintrc"
+    #cp "copr/datarecovery-rpmlintrc" "$target_dir/datarecovery-rpmlintrc"
     cp "v$version.tar.gz" "$target_dir/v$version.tar.gz"
 }
 
