@@ -5,15 +5,15 @@ trap 'if [[ ${FUNCNAME[0]} == test_arch_files ]]; then printf "Arch files moved\
 version="0.7.2"
 
 mode=(
-    test
-    #release
+    #test
+    release
 )
 
 version_targets=(
-  #arch
-  #debian
-  #ubuntu
-  #fedora
+  arch
+  debian
+  ubuntu
+  fedora
   opensuse
 )
 
@@ -302,6 +302,10 @@ test_opensuse_commit(){
 
 test_arch_files(){
     printf 'Moving arch files\n'
+    if [[ ! -d "$aur_dir" ]]; then
+        printf 'Skipping arch files: AUR directory not found at %s\n' "$aur_dir"
+        return 0
+    fi
     target_dir="$obs_dir/home:koxt2:arch/datarecovery_test"
     find "$target_dir" -mindepth 1 -not -path "$target_dir/.osc" -not -path "$target_dir/.osc/*" -delete
     cp "aur/PKGBUILD" "$target_dir/PKGBUILD"
@@ -578,6 +582,11 @@ release_arch_version(){
 
 release_arch_commit(){
     printf 'Starting %s\n' "${FUNCNAME[0]}"
+
+    if [[ ! -d "$aur_dir" ]]; then
+        printf 'Skipping release_arch_commit: AUR directory not found at %s\n' "$aur_dir"
+        return 0
+    fi
 
     # needs git clone from aur
     #git clone ssh://aur@aur.archlinux.org/datarecovery.git "$aur_dir"

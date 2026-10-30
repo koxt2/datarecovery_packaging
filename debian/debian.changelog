@@ -1,3 +1,11 @@
+datarecovery (0.7.2-1) UNRELEASED; urgency=medium
+  * Man page
+  * datarecovery --version now reports correctly
+  * Moved datarecovery-pkexec-helper from /usr/bin to /usr/libexec
+  * Updated license address
+
+ -- koxt2 <koxt2@protonmail.com> Fri, 30 Oct 2026 22:29:37 +0000
+ 
 datarecovery (0.7.1-1) UNRELEASED; urgency=medium
   * metainfo file update
 
