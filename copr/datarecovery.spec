@@ -63,18 +63,4 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 %{_datadir}/metainfo/com.github.koxt2.datarecovery.metainfo.xml
 %{_datadir}/polkit-1/actions/datarecovery.policy
 
-
-%changelog
-* Fri Oct 30 2026 koxt2 <koxt2@protonmail.com> - 0.7.2
-- Man page
-- datarecovery --version now reports correctly
-- Moved datarecovery-pkexec-helper from /usr/bin to /usr/libexec
-- Updated license address
-
-* Fri Oct 30 2026 koxt2 <koxt2@protonmail.com> - 0.7.2
-- Man page
-- datarecovery --version now reports correctly
-- Moved datarecovery-pkexec-helper from /usr/bin to /usr/libexec
-- Updated license address
-
 %autochangelog
