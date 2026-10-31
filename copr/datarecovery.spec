@@ -63,4 +63,5 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 %{_datadir}/metainfo/com.github.koxt2.datarecovery.metainfo.xml
 %{_datadir}/polkit-1/actions/datarecovery.policy
 
+%changelog
 %autochangelog
