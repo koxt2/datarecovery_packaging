@@ -8,15 +8,6 @@ Fri Oct 30 22:35:59 UTC 2026 - koxt2 <koxt2@protonmail.com>
   * Updated license address
 
 -------------------------------------------------------------------
-Fri Oct 30 22:29:37 UTC 2026 - koxt2 <koxt2@protonmail.com>
-
-- Update to 0.7.2
-  * Man page
-  * datarecovery --version now reports correctly
-  * Moved datarecovery-pkexec-helper from /usr/bin to /usr/libexec
-  * Updated license address
-
--------------------------------------------------------------------
 Mon Oct 05 22:55:46 UTC 2026 - koxt2 <koxt2@protonmail.com>
 
 - Update to 0.7.1
