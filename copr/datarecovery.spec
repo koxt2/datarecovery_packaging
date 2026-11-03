@@ -20,8 +20,8 @@ BuildRequires:  libappstream-glib
 
 Requires:       python3
 Requires:       python3-gobject
-Requires:       typelib(Adw) = 1
-Requires:       typelib(Gtk) = 4.0
+Requires:       libadwaita
+Requires:       gtk4
 Requires:       ddrescue
 Requires:       testdisk
 Requires:       rdfind
